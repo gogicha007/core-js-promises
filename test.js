@@ -1,9 +1,17 @@
-function getPromiseResult(source) {
-  return source.then(() => 'success').catch(() => 'fail');
+function queuPromises(promises) {
+  return Promise.allSettled(promises).then((results) =>
+    Promise.resolve(results.reduce((acc, result) => acc + result.value, ''))
+  );
 }
 
-const resolver = (number) =>
-  number % 2 === 0 ? Promise.resolve() : Promise.reject();
+const promise1 = Promise.resolve(10);
+const promise2 = Promise.resolve(20);
+const promise3 = Promise.resolve(30);
+const promise4 = new Promise((resolve) => setTimeout(() => resolve(40), 10));
 
-console.log(getPromiseResult(resolver(2)));
-console.log(getPromiseResult(resolver(9)));
+const queue = await new Promise(queuPromises([promise1, promise2, promise3, promise4]));
+
+console.log(queue)
+
+
+
